@@ -5,6 +5,7 @@ Octree::Octree() {
 }
 
 void Octree::insert(Point newPoint) {
+    
     Node* current = root;
 
     while (current != nullptr) {
@@ -20,8 +21,38 @@ void Octree::insert(Point newPoint) {
             current->child[octant]->GLCube = new GL_Cube(glm::vec3(0,0,0), glm::vec3(1,1,1));
             current->child[octant]->GLCube-> set_model(current -> GLCube-> get_model());
             current->child[octant]->GLCube->scale(glm::vec3(0.5f, 0.5f, 0.5f));
-            current->child[octant]->GLCube->translate(current->GL_calcularCentroOctante(octant));
+
             
+            switch (octant)
+            {
+            case 0:
+                current->child[octant]->GLCube->translate(glm::vec3(-0.5,-0.5,-0.5));
+                break;
+            case 1:
+                current->child[octant]->GLCube->translate(glm::vec3(0.5,-0.5,-0.5));
+                break;  
+            case 2:
+                current->child[octant]->GLCube->translate(glm::vec3(-0.5,0.5,-0.5));
+                break;
+            case 3:
+                current->child[octant]->GLCube->translate(glm::vec3(0.5,0.5,-0.5));
+                break;       
+            case 4:
+                current->child[octant]->GLCube->translate(glm::vec3(-0.5,-0.5,0.5));
+                break;
+            case 5:
+                current->child[octant]->GLCube->translate(glm::vec3(0.5,-0.5,0.5));
+                break;         
+            case 6:
+                current->child[octant]->GLCube->translate(glm::vec3(-0.5,0.5,0.5));
+                break;  
+            case 7:
+                current->child[octant]->GLCube->translate(glm::vec3(0.5,0.5,0.5));
+                break;            
+            default:
+                break;
+            }
+
             return;
         }
         current = current->child[octant];
@@ -34,7 +65,9 @@ void Octree::insert(Point newPoint) {
 
 void Octree::printLeaves(glm::mat4 view, glm::mat4 projection) {
     view = view * model;
+    //std::cout << "////////////////////\n";
     printLeavesRecursive(root, view, projection);
+    //std::cout << "////////////////////\n";
 }
 
 void Octree::printLeavesRecursive(Node* current, glm::mat4 view, glm::mat4 projection) {
@@ -44,6 +77,12 @@ void Octree::printLeavesRecursive(Node* current, glm::mat4 view, glm::mat4 proje
             current->child[4] == nullptr && current->child[5] == nullptr &&
             current->child[6] == nullptr && current->child[7] == nullptr) {
                 current->render(view, projection);
+                // Es un nodo hoja, imprímelo
+                //  std::cout << "Leaf Node: (" << current->coordinate.x << ", "
+                //          << current->coordinate.y << ", " << current->coordinate.z << ")";
+                //  std::cout << " Depth: " << current->depth;
+                //  std::cout << " GL Node: (" << current->GL_coordinate.x << ", "
+                //  << current->GL_coordinate.y << ", " << current->GL_coordinate.z << ")\n";
         } else {
             for (int i = 0; i < 8; ++i) {
                 printLeavesRecursive(current->child[i], view, projection);
